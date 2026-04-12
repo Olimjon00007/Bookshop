@@ -1,11 +1,9 @@
 node_modules/
 .env
-.claude
 bookshop.db
 bookshop.db-shm
 bookshop.db-wal
 database.sqlite
 scratch/
 package-lock.json
-server.js
-.env
+server.js.env
