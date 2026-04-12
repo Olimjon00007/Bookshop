@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Kitob Do'koni — shaxsiy kitob katalogi">
+    <title>Kitob Do'koni</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+<div class="dashboard">
+
+    <!-- Sarlavha -->
+    <header class="header">
+        <div class="search-bar">
+            <div class="search-wrapper">
+                <input type="text" id="search-input" placeholder="Kitob izlash... (Ctrl+K)">
+                <button id="search-btn"><i class="fas fa-search"></i></button>
+                <div id="search-dropdown" style="display:none;"></div>
+            </div>
+        </div>
+        <div class="header-actions">
+            <button id="add-book-btn">Kitob qo'shish</button>
+            <div class="profile-avatar" id="profile-btn" title="Kirish">
+                <span>Kirish</span>
+            </div>
+            <button id="menu-btn"><i class="fas fa-bars"></i></button>
+        </div>
+    </header>
+
+    <!-- Kategoriya filtrlari -->
+   
+    <div class="main-content">
+
+        <!-- Yon panel -->
+        <aside class="sidebar">
+            <h3>Janrlar</h3>
+            <ul>
+                <li class="genre active" data-genre="Barchasi">Barchasi</li>
+                <li class="genre" data-genre="Fantastika">Fantastika</li>
+                <li class="genre" data-genre="Ilmiy fantastika">Ilmiy fantastika</li>
+                <li class="genre" data-genre="Roman">Roman</li>
+                <li class="genre" data-genre="Detektiv">Detektiv</li>
+                <li class="genre" data-genre="Sarguzasht">Sarguzasht</li>
+                <li class="genre" data-genre="Romantika">Romantika</li>
+                <li class="genre" data-genre="Dahshat">Dahshat</li>
+                <li class="genre" data-genre="Tarixiy">Tarixiy</li>
+                <li class="genre" data-genre="Triller">Triller</li>
+            </ul>
+        </aside>
+
+        <!-- Asosiy kontent -->
+        <main class="center-content">
+
+            <!-- Hero (kitoblar bo'sh bo'lganda ko'rinadi) -->
+            <section class="hero" id="hero-section">
+                <div class="open-book">
+                    <div class="book">
+                        <div class="page left"></div>
+                        <div class="page right"></div>
+                        <div class="spine"></div>
+                    </div>
+                </div>
+                <h1>Kitob Do'kkoniga Xush Kelibsiz</h1>
+                <p>Eng yaxshi kitoblarni kashf eting va o'z kutubxonangizni yarating</p>
+                <div id="hero-actions" style="margin-top: 2rem; display: none;">
+                    <button class="btn-primary btn-large" id="hero-join-btn">Hozir Qo'shiling</button>
+                </div>
+            </section>
+
+            <!-- Kitoblar to'ri -->
+            <section class="books-container" id="books-section" style="display:none;">
+                <div class="section-header">
+                    <h2 id="section-title">Barcha Kitoblar</h2>
+                </div>
+                <div class="books-grid" id="books-grid"></div>
+                <div class="pagination" id="pagination"></div>
+            </section>
+
+            <!-- Analitika kartalari -->
+            <section class="analytics">
+                <div class="card">
+                    <h4>Jami Kitoblar</h4>
+                    <div class="number" id="total-books">—</div>
+                    <div class="chart">
+                        <div class="bar" style="height:0%" data-height="60%"></div>
+                    </div>
+                </div>
+                <div class="card">
+                    <h4>O'qilgan Kitoblar</h4>
+                    <div class="number" id="read-books">—</div>
+                    <div class="chart">
+                        <div class="bar" style="height:0%" data-height="45%"></div>
+                    </div>
+                </div>
+                <div class="card">
+                    <h4>Sevimlilar</h4>
+                    <div class="number" id="favorites-count">—</div>
+                    <div class="chart">
+                        <div class="bar" style="height:0%" data-height="30%"></div>
+                    </div>
+                </div>
+                <div class="card">
+                    <h4>Bu Oy Qo'shilgan</h4>
+                    <div class="number" id="new-books">—</div>
+                    <div class="chart">
+                        <div class="bar" style="height:0%" data-height="20%"></div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+</div>
+
+<!-- ── Kitob qo'shish / tahrirlash modali ─────────────────────────────────── -->
+<div id="add-book-modal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2 id="add-book-modal-title">Kitob Qo'shish</h2>
+        <form id="add-book-form">
+            <div class="form-group">
+                <label for="book-image">Muqova rasmi</label>
+                <div class="image-upload">
+                    <input type="file" id="book-image" accept="image/*">
+                    <div class="preview" id="image-preview">
+                        <i class="fas fa-upload"></i>
+                        <p>Rasm tanlang</p>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="book-name">Kitob nomi</label>
+                <input type="text" id="book-name" placeholder="Kitob nomi" required>
+            </div>
+            <div class="form-group">
+                <label for="book-author">Muallif</label>
+                <input type="text" id="book-author" placeholder="Muallif ismi" required>
+            </div>
+            <div class="form-group">
+                <label for="book-genre">Janr</label>
+                <select id="book-genre" required>
+                    <option value="">Janr tanlang</option>
+                    <option value="Fantastika">Fantastika</option>
+                    <option value="Ilmiy fantastika">Ilmiy fantastika</option>
+                    <option value="Roman">Roman</option>
+                    <option value="Detektiv">Detektiv</option>
+                    <option value="Sarguzasht">Sarguzasht</option>
+                    <option value="Romantika">Romantika</option>
+                    <option value="Dahshat">Dahshat</option>
+                    <option value="Tarixiy">Tarixiy</option>
+                    <option value="Triller">Triller</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="book-phone">Aloqa uchun raqam</label>
+                <input type="tel" id="book-phone" placeholder="+998XXXXXXXXX">
+            </div>
+            <div class="form-group">
+                <label for="book-year">Nashr yili</label>
+                <input type="number" id="book-year" placeholder="Nashr yili" min="1000" max="2026">
+            </div>
+            <div class="form-group">
+                <label for="book-status">Holati</label>
+                <select id="book-status">
+                    <option value="Mavjud">Mavjud</option>
+                    <option value="O'qilmoqda">O'qilmoqda</option>
+                    <option value="O'qilgan">O'qilgan</option>
+                </select>
+            </div>
+            <button type="submit" class="btn-primary" id="add-book-submit">Saqlash</button>
+        </form>
+    </div>
+</div>
+
+<!-- ── Kirish modali ───────────────────────────────────────────────────────── -->
+<div id="login-modal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Tizimga Kirish</h2>
+        <form id="login-form">
+            <div class="form-group">
+                <label for="login-username">Foydalanuvchi nomi</label>
+                <input type="text" id="login-username" placeholder="Foydalanuvchi nomingiz" autocomplete="username" required>
+            </div>
+            <div class="form-group">
+                <label for="login-password">Parol</label>
+                <div class="password-input-container">
+                    <input type="password" id="login-password" placeholder="Parolingiz" autocomplete="current-password" required>
+                    <i class="fas fa-eye toggle-password" data-target="login-password"></i>
+                </div>
+            </div>
+            <button type="submit" class="btn-primary">Kirish</button>
+            <p class="login-link">Hisobingiz yo'qmi? <a href="#" id="switch-to-register">Ro'yxatdan o'tish</a></p>
+        </form>
+    </div>
+</div>
+
+<!-- ── Ro'yxatdan o'tish modali ───────────────────────────────────────────── -->
+<div id="register-modal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Ro'yxatdan O'tish</h2>
+        <form id="register-form">
+            <div class="form-group">
+                <label for="reg-fullname">To'liq ism</label>
+                <input type="text" id="reg-fullname" placeholder="To'liq ismingiz" required>
+            </div>
+            <div class="form-group">
+                <label for="reg-phone">Telefon</label>
+                <input type="tel" id="reg-phone" placeholder="+998XXXXXXXXX" required>
+            </div>
+            <div class="form-group">
+                <label for="reg-username">Foydalanuvchi nomi</label>
+                <input type="text" id="reg-username" placeholder="3–20 ta harf/raqam" autocomplete="username" required>
+            </div>
+            <div class="form-group">
+                <label for="reg-password">Parol</label>
+                <div class="password-input-container">
+                    <input type="password" id="reg-password" placeholder="Kamida 8 ta belgi" autocomplete="new-password" required>
+                    <i class="fas fa-eye toggle-password" data-target="reg-password"></i>
+                </div>
+            </div>
+            <button type="submit" class="btn-primary">Ro'yxatdan O'tish</button>
+            <p class="login-link">Hisobingiz bormi? <a href="#" id="switch-to-login">Kirish</a></p>
+        </form>
+    </div>
+</div>
+
+<!-- ── Foydalanuvchi profili modali ───────────────────────────────────────── -->
+<div id="user-profile-modal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <div class="user-profile-view">
+            <div class="profile-header">
+                <div class="profile-avatar-large" id="profile-avatar-initials"></div>
+                <div class="profile-info">
+                    <h2 id="profile-name"></h2>
+                    <p id="profile-username" style="color:#d4af37;font-weight:600;"></p>
+                    <div class="profile-stats">
+                        <span><strong id="profile-book-count">0</strong> ta kitob</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="profile-tabs">
+                <button class="profile-tab active" data-tab="books">Kitoblarim</button>
+                <button class="profile-tab" data-tab="favorites">Sevimlilar</button>
+                <button class="profile-tab" data-tab="password">Parol</button>
+            </div>
+
+            <div class="profile-tab-content" id="tab-books">
+                <div class="profile-books" id="profile-books"></div>
+            </div>
+
+            <div class="profile-tab-content" id="tab-favorites" style="display:none;">
+                <div class="profile-books" id="profile-favorites"></div>
+            </div>
+
+            <div class="profile-tab-content" id="tab-password" style="display:none;">
+                <form id="change-password-form">
+                    <div class="form-group">
+                        <label for="cp-current">Joriy parol</label>
+                        <div class="password-input-container">
+                            <input type="password" id="cp-current" placeholder="Joriy parolingiz" required>
+                            <i class="fas fa-eye toggle-password" data-target="cp-current"></i>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="cp-new">Yangi parol</label>
+                        <div class="password-input-container">
+                            <input type="password" id="cp-new" placeholder="Kamida 8 ta belgi" required>
+                            <i class="fas fa-eye toggle-password" data-target="cp-new"></i>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="cp-confirm">Yangi parolni tasdiqlang</label>
+                        <div class="password-input-container">
+                            <input type="password" id="cp-confirm" placeholder="Parolni takrorlang" required>
+                            <i class="fas fa-eye toggle-password" data-target="cp-confirm"></i>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-primary">Parolni Yangilash</button>
+                </form>
+            </div>
+
+            <button class="btn-outline" id="logout-btn" style="margin-top:1.5rem;">
+                <i class="fas fa-sign-out-alt"></i> Chiqish
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ── Kitob tafsiloti modali ─────────────────────────────────────────────── -->
+<div id="book-detail-modal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <div class="book-detail">
+            <div class="book-detail-cover" id="detail-cover"></div>
+            <div class="book-detail-info">
+                <h2 id="detail-title"></h2>
+
+                <!-- Tugmalar qatori -->
+                <div class="book-btn-row">
+                    <button class="btn-share" id="share-book-btn">&#x2197; Ulashish</button>
+                    <button class="btn-favorite" id="favorite-book-btn" style="display:none;">♡ Sevimli</button>
+                </div>
+                <div class="book-owner-actions" id="book-owner-actions" style="display:none;">
+                    <button class="btn-edit" id="edit-book-btn"><i class="fas fa-pen"></i> Tahrirlash</button>
+                    <button class="btn-delete" id="delete-book-btn"><i class="fas fa-trash"></i> O'chirish</button>
+                </div>
+
+                <p><strong>Muallif:</strong> <span id="detail-author"></span></p>
+                <p><strong>Janr:</strong> <span id="detail-genre"></span></p>
+                <p><strong>Yil:</strong> <span id="detail-year"></span></p>
+                <p><strong>Aloqa uchun raqam:</strong> <span id="detail-phone"></span></p>
+                <p><strong>Ko'rishlar:</strong> <span id="detail-views"></span></p>
+                <hr style="margin:1rem 0;border:none;border-top:1px solid rgba(0,0,0,0.08);">
+                <p style="margin-bottom:0.5rem;"><strong>Qo'shgan:</strong></p>
+                <div class="uploader-info" id="uploader-info"></div>
+
+                <!-- O'qish holati (kirgan foydalanuvchilar uchun) -->
+                <div class="reading-status-selector" id="reading-status-selector" style="display:none;">
+                    <p style="margin-top:1rem;margin-bottom:0.4rem;"><strong>O'qish holati:</strong></p>
+                    <div class="status-buttons">
+                        <button class="btn-status" data-status="xohlayapman">O'qimoqchiman</button>
+                        <button class="btn-status" data-status="oqiyapman">O'qiyapman</button>
+                        <button class="btn-status" data-status="oqidim">O'qidim ✓</button>
+                    </div>
+                </div>
+
+                <!-- Reytinglar olib tashlandi -->
+                <div class="ratings-section" id="ratings-section" style="display: none;">
+                    <p><strong>Reyting:</strong> <span id="detail-avg-rating">—</span></p>
+                    <div id="detail-reviews"></div>
+                    <div id="detail-rating-input" style="display:none;margin-top:1rem;">
+                        <p style="margin-bottom:0.5rem;"><strong>Kitobni baholang:</strong></p>
+                        <div class="star-input" id="star-input">
+                            <span class="star" data-value="1">★</span>
+                            <span class="star" data-value="2">★</span>
+                            <span class="star" data-value="3">★</span>
+                            <span class="star" data-value="4">★</span>
+                            <span class="star" data-value="5">★</span>
+                        </div>
+                        <textarea id="review-text" placeholder="Fikringizni yozing (ixtiyoriy)..." rows="3"></textarea>
+                        <button class="btn-primary" id="submit-rating-btn">Baholash</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ── Yon menyu ───────────────────────────────────────────────────────────── -->
+<div id="slide-menu" class="slide-menu">
+    <div class="menu-header">
+        <h3>Menyu</h3>
+        <span class="close-menu">&times;</span>
+    </div>
+    <ul class="menu-items">
+        <li id="menu-add-book"><i class="fas fa-plus"></i> Kitob qo'shish</li>
+        <li id="menu-my-books"><i class="fas fa-book"></i> Mening kitoblarim</li>
+        <li id="menu-profile"><i class="fas fa-user"></i> Profilim</li>
+
+        <li id="menu-logout"><i class="fas fa-sign-out-alt"></i> Chiqish</li>
+    </ul>
+</div>
+
+<div id="toast-container"></div>
+<div id="loading-overlay" style="display:none;"><div class="spinner"></div></div>
+
+
+
+    <script src="script.js?v=2"></script>
+</body>
+</html>
